@@ -16,6 +16,8 @@ public class MainActivity extends Activity implements OnClickListener{
 	private Button button;
 	private AnimationSet animation;
 	private View view;
+	
+	private boolean isAnimate;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class MainActivity extends Activity implements OnClickListener{
 		animation = new AnimationSet(false);
 		animation.addAnimation(transX);
 		animation.addAnimation(transY);
+		animation.setFillAfter(true);
 
 		// 適当なボタン
 		button = (Button) findViewById(R.id.button1);
@@ -52,22 +55,35 @@ public class MainActivity extends Activity implements OnClickListener{
 	
 	@Override
 	public void onClick(View v) {
-		view.startAnimation(animation);
+		if(isAnimate){
+			isAnimate = false;
+		}else{
+			view.startAnimation(animation);
+			isAnimate = true;
+		}
 	}
 
 	class SinInterpolator implements Interpolator {
+		private float restoreInput;
+		
 		@Override
 		public float getInterpolation(float input) {
-			input *= 2 * Math.PI;
-			return FloatMath.sin(input);
+			if(isAnimate)
+				restoreInput = input;
+			
+			return FloatMath.sin((float) (restoreInput * 2 * Math.PI));
 		}
 	}
 
 	class CosInterpolator implements Interpolator {
+		private float restoreInput;
+		
 		@Override
 		public float getInterpolation(float input) {
-			input *= 2 * Math.PI;
-			return  FloatMath.cos(input);
+			if(isAnimate)
+				restoreInput = input;
+			
+			return  FloatMath.cos((float) (restoreInput * 2 * Math.PI));
 		}
 	}
 }
